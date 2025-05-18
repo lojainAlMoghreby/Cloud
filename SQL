@@ -1,0 +1,14 @@
+SELECT
+  terms.refresh_date AS Day,
+  terms.term AS Top_Term,
+  terms.rank,
+  cats.category,
+  FORMAT_DATE('%G-W%V', terms.refresh_date) AS Week
+FROM `bigquery-public-data.google_trends.top_terms` AS terms
+JOIN `bigquery-public-data.google_trends.term_categories` AS cats
+  ON terms.term = cats.term
+WHERE
+  terms.rank <= 3  -- Top 3 terms
+  AND terms.refresh_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)  -- Last month
+  AND terms.region = 'GB'  -- UK region
+ORDER BY Day DESC, terms.rank ASC
